@@ -26,6 +26,7 @@ public class Subscription extends BaseEntity { // Extending BaseEntity
         return id;
     }
 
+
     public LocalDate getStartDate() {
         return startDate;
     }
