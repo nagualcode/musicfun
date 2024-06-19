@@ -1,26 +1,37 @@
 package br.infnet.musicfun.domain.playlist.model;
 
-import br.infnet.musicfun.domain.core.model.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.Duration;
-
-@Entity
-@Table(name = "musics")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Music extends BaseEntity {
+public class Music implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false)
+    private Long id;
     private String title;
-
-    @Column(nullable = false)
     private String artist;
+    private int duration;
 
-    @Column(nullable = false)
-    private Duration duration;
+    // Getter methods
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
 }

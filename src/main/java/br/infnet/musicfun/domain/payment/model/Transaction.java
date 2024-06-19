@@ -1,35 +1,43 @@
 package br.infnet.musicfun.domain.payment.model;
 
-import br.infnet.musicfun.domain.core.model.BaseEntity;
-import br.infnet.musicfun.domain.user.model.User;
-import jakarta.persistence.*;
-import lombok.*;
+import java.io.Serializable;
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "transactions")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Transaction extends BaseEntity {
+public class Transaction implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false)
-    private BigDecimal amount;
-
-    @Column(nullable = false)
-    private LocalDateTime transactionDate;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Column(nullable = false)
-    private String status;
-
-    @Column(nullable = false)
+    private Long id;
+    private double amount;
     private String merchant;
+    private String status;
+    private LocalDate transactionDate;
+
+    // Getter methods
+    public Long getId() {
+        return id;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public String getMerchant() {
+        return merchant;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
 }

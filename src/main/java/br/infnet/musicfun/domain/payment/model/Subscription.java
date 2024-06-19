@@ -1,31 +1,38 @@
 package br.infnet.musicfun.domain.payment.model;
 
-import br.infnet.musicfun.domain.core.model.BaseEntity;
-import br.infnet.musicfun.domain.user.model.User;
-import jakarta.persistence.*;
-import lombok.*;
+import java.io.Serializable;
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "subscriptions")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Subscription extends BaseEntity {
+public class Subscription implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Column(nullable = false)
-    private LocalDateTime startDate;
-
-    @Column(nullable = false)
-    private LocalDateTime endDate;
-
-    @Column(nullable = false)
+    private Long id;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String status;
+
+    // Getter methods
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

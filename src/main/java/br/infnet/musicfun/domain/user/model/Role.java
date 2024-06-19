@@ -1,24 +1,27 @@
 package br.infnet.musicfun.domain.user.model;
 
-import br.infnet.musicfun.domain.core.model.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@Table(name = "roles")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Role extends BaseEntity {
+public class Role implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false, unique = true)
+    private Long id;
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    // Getter methods
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

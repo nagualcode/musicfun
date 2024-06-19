@@ -1,33 +1,33 @@
 package br.infnet.musicfun.domain.playlist.model;
 
-import br.infnet.musicfun.domain.core.model.BaseEntity;
-import br.infnet.musicfun.domain.user.model.User;
-import jakarta.persistence.*;
-import lombok.*;
+import java.io.Serializable;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@Table(name = "playlists")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Playlist extends BaseEntity {
+public class Playlist implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false)
+    private Long id;
     private String name;
+    private List<Music> musics;
 
-    @ManyToMany
-    @JoinTable(
-            name = "playlist_music",
-            joinColumns = @JoinColumn(name = "playlist_id"),
-            inverseJoinColumns = @JoinColumn(name = "music_id"))
-    private Set<Music> musics = new HashSet<>();
+    // Getter methods
+    public Long getId() {
+        return id;
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    public String getName() {
+        return name;
+    }
+
+    public List<Music> getMusics() {
+        return musics;
+    }
 }
