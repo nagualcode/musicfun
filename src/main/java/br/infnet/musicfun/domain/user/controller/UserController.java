@@ -1,9 +1,9 @@
 package br.infnet.musicfun.domain.user.controller;
 
 import br.infnet.musicfun.domain.user.dto.UserDTO;
-import br.infnet.musicfun.domain.user.model.User;
+import br.infnet.musicfun.domain.user.model.AppUser;
 import br.infnet.musicfun.domain.user.service.UserService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,47 +13,50 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public List<UserDTO> getAllUsers() {
-        return userService.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return userService.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    public UserDTO getUserById(@PathVariable Long id) {
         return userService.findById(id)
                 .map(this::convertToDTO)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        User user = convertToEntity(userDTO);
-        User savedUser = userService.save(user);
-        return ResponseEntity.ok(convertToDTO(savedUser));
+    public UserDTO createUser(@RequestBody UserDTO userDTO) {
+        AppUser user = convertToEntity(userDTO);
+        AppUser savedUser = userService.save(user);
+        return convertToDTO(savedUser);
+    }
+
+    @PutMapping("/{id}")
+    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        AppUser user = convertToEntity(userDTO);
+        user.setId(id);
+        AppUser updatedUser = userService.update(user);
+        return convertToDTO(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable Long id) {
         userService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        return dto;
+    private UserDTO convertToDTO(AppUser user) {
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail());
     }
 
-    private User convertToEntity(UserDTO userDTO) {
-        User user = new User();
+    private AppUser convertToEntity(UserDTO userDTO) {
+        AppUser user = new AppUser();
+        user.setId(userDTO.getId());
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         return user;

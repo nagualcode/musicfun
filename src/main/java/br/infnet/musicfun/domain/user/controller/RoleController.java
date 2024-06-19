@@ -3,7 +3,7 @@ package br.infnet.musicfun.domain.user.controller;
 import br.infnet.musicfun.domain.user.dto.RoleDTO;
 import br.infnet.musicfun.domain.user.model.Role;
 import br.infnet.musicfun.domain.user.service.RoleService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,46 +13,50 @@ import java.util.stream.Collectors;
 @RequestMapping("/roles")
 public class RoleController {
 
-    private final RoleService roleService;
-
-    public RoleController(RoleService roleService) {
-        this.roleService = roleService;
-    }
+    @Autowired
+    private RoleService roleService;
 
     @GetMapping
     public List<RoleDTO> getAllRoles() {
-        return roleService.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return roleService.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id) {
+    public RoleDTO getRoleById(@PathVariable Long id) {
         return roleService.findById(id)
                 .map(this::convertToDTO)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new RuntimeException("Role not found"));
     }
 
     @PostMapping
-    public ResponseEntity<RoleDTO> createRole(@RequestBody RoleDTO roleDTO) {
+    public RoleDTO createRole(@RequestBody RoleDTO roleDTO) {
         Role role = convertToEntity(roleDTO);
         Role savedRole = roleService.save(role);
-        return ResponseEntity.ok(convertToDTO(savedRole));
+        return convertToDTO(savedRole);
+    }
+
+    @PutMapping("/{id}")
+    public RoleDTO updateRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO) {
+        Role role = convertToEntity(roleDTO);
+        role.setId(id);
+        Role updatedRole = roleService.update(role);
+        return convertToDTO(updatedRole);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
+    public void deleteRole(@PathVariable Long id) {
         roleService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     private RoleDTO convertToDTO(Role role) {
-        RoleDTO dto = new RoleDTO();
-        dto.setId(role.getId());
-        dto.setName(role.getName());
-        return dto;
+        return new RoleDTO(role.getId(), role.getName());
     }
 
     private Role convertToEntity(RoleDTO roleDTO) {
         Role role = new Role();
+        role.setId(roleDTO.getId());
         role.setName(roleDTO.getName());
         return role;
     }

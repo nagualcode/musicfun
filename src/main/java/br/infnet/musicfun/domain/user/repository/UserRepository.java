@@ -1,10 +1,12 @@
 package br.infnet.musicfun.domain.user.repository;
 
 import br.infnet.musicfun.domain.user.model.AppUser;
-import br.infnet.musicfun.domain.core.repository.BaseRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface UserRepository extends BaseRepository<AppUser> {
-    AppUser findByUsername(String username);
+public interface UserRepository extends JpaRepository<AppUser, Long> {
+    Optional<AppUser> findByUsername(String username);
 }

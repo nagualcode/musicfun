@@ -4,57 +4,57 @@ import br.infnet.musicfun.domain.playlist.dto.MusicDTO;
 import br.infnet.musicfun.domain.playlist.model.Music;
 import br.infnet.musicfun.domain.playlist.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/musics")
+@RequestMapping("/music")
 public class MusicController {
 
     @Autowired
     private MusicService musicService;
 
     @GetMapping
-    public List<MusicDTO> getAllMusics() {
-        return musicService.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+    public List<MusicDTO> getAllMusic() {
+        return musicService.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MusicDTO> getMusicById(@PathVariable Long id) {
-        return musicService.findById(id).map(music -> ResponseEntity.ok(convertToDTO(music)))
-                .orElse(ResponseEntity.notFound().build());
+    public MusicDTO getMusicById(@PathVariable Long id) {
+        return musicService.findById(id)
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new RuntimeException("Music not found"));
     }
 
     @PostMapping
-    public ResponseEntity<MusicDTO> createMusic(@RequestBody MusicDTO musicDTO) {
+    public MusicDTO createMusic(@RequestBody MusicDTO musicDTO) {
         Music music = convertToEntity(musicDTO);
         Music savedMusic = musicService.save(music);
-        return ResponseEntity.ok(convertToDTO(savedMusic));
+        return convertToDTO(savedMusic);
+    }
+
+    @PutMapping("/{id}")
+    public MusicDTO updateMusic(@PathVariable Long id, @RequestBody MusicDTO musicDTO) {
+        Music music = convertToEntity(musicDTO);
+        music.setId(id);
+        Music updatedMusic = musicService.update(music);
+        return convertToDTO(updatedMusic);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMusic(@PathVariable Long id) {
-        musicService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public void deleteMusic(@PathVariable Long id) {
+        musicService.delete(id);
     }
 
     private MusicDTO convertToDTO(Music music) {
-        return MusicDTO.builder()
-                .id(music.getId())
-                .title(music.getTitle())
-                .artist(music.getArtist())
-                .duration(music.getDuration())
-                .build();
+        return new MusicDTO(music.getId(), music.getTitle(), music.getArtist(), music.getDuration());
     }
 
     private Music convertToEntity(MusicDTO musicDTO) {
-        return Music.builder()
-                .title(musicDTO.getTitle())
-                .artist(musicDTO.getArtist())
-                .duration(musicDTO.getDuration())
-                .build();
+        return new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration());
     }
 }

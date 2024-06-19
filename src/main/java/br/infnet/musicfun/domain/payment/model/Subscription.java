@@ -1,25 +1,70 @@
 package br.infnet.musicfun.domain.payment.model;
 
 import br.infnet.musicfun.domain.core.model.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import jakarta.persistence.Entity;
 import java.time.LocalDate;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-public class Subscription extends BaseEntity { // Extending BaseEntity
-    private static final long serialVersionUID = 1L;
-
+public class Subscription extends BaseEntity {
     private String type;
+    private String planName;
+    private double price;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    // Using Jakarta Persistence annotations and Lombok's @Data for automatic getter/setter generation
+    public Subscription() {
+    }
+
+    public Subscription(Long id, String type, String planName, double price, LocalDate startDate, LocalDate endDate) {
+        this.setId(id);
+        this.type = type;
+        this.planName = planName;
+        this.price = price;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getPlanName() {
+        return planName;
+    }
+
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getDuration() {
+        return String.format("%d days", endDate.toEpochDay() - startDate.toEpochDay());
+    }
 }

@@ -1,20 +1,41 @@
 package br.infnet.musicfun.domain.playlist.model;
 
-import br.infnet.musicfun.domain.core.model.BaseEntity;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
-public class Playlist extends BaseEntity {
+public class Playlist implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
-    private String description;
 
-    public Playlist() {}
+    @ManyToMany
+    @JoinTable(
+            name = "playlist_music",
+            joinColumns = @JoinColumn(name = "playlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "music_id"))
+    private List<Music> musics;
 
-    public Playlist(String name, String description) {
+    public Playlist() {
+    }
+
+    public Playlist(Long id, String name, List<Music> musics) {
+        this.id = id;
         this.name = name;
-        this.description = description;
+        this.musics = musics;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -25,11 +46,20 @@ public class Playlist extends BaseEntity {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public List<Music> getMusics() {
+        return musics;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setMusics(List<Music> musics) {
+        this.musics = musics;
+    }
+
+    @Override
+    public String toString() {
+        return "Playlist{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", musics=" + musics +
+                '}';
     }
 }

@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AntiFraudService {
-    public boolean isFraud(Transaction transaction) {
+
+    public boolean validateTransaction(Transaction transaction) {
         double amount = transaction.getAmount();
         String merchant = transaction.getMerchant();
-        
-        // Implement your anti-fraud logic here
-        return false;
+        // Implement fraud validation logic here
+        return true;
     }
 }
