@@ -56,11 +56,12 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
+	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>edge-SNAPSHOT</version>
+		<scope>provided</scope>
+	</dependency>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -73,6 +74,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+	<repository>
+		<id>projectlombok.org</id>
+		<url>https://projectlombok.org/edge-releases</url>
+	</repository>
+</repositories>
 
 	<build>
 		<plugins>

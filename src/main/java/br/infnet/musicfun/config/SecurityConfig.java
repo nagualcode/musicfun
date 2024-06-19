@@ -23,17 +23,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeRequests(authorize -> authorize
-                .antMatchers("/", "/home", "/register", "/css/**", "/js/**").permitAll()
+            .authorizeRequests()
+                .requestMatchers("/", "/home", "/register", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
+            .and()
+            .formLogin()
                 .loginPage("/login")
                 .permitAll()
-            )
-            .logout(logout -> logout
-                .permitAll()
-            );
+            .and()
+            .logout()
+                .permitAll();
+        
         return http.build();
     }
 

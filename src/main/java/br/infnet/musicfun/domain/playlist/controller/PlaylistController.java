@@ -1,12 +1,13 @@
 package br.infnet.musicfun.domain.playlist.controller;
 
 import br.infnet.musicfun.domain.playlist.dto.PlaylistDTO;
+import br.infnet.musicfun.domain.playlist.dto.MusicDTO;  // Added import for MusicDTO
 import br.infnet.musicfun.domain.playlist.model.Playlist;
+import br.infnet.musicfun.domain.playlist.model.Music;  // Added import for Music
 import br.infnet.musicfun.domain.playlist.service.PlaylistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

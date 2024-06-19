@@ -1,20 +1,29 @@
 package br.infnet.musicfun.domain.user.service;
 
-import br.infnet.musicfun.domain.user.model.User;
 import br.infnet.musicfun.domain.user.repository.UserRepository;
-import br.infnet.musicfun.domain.core.service.BaseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-public class UserService extends BaseService<User> {
+public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public Optional<User> findByUsername(String username) {
-        return Optional.ofNullable(userRepository.findByUsername(username));
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .map(user -> User.builder()
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .authorities("USER") // Adapt according to your actual authority management
+                    .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

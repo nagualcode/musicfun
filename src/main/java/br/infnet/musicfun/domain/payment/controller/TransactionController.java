@@ -6,7 +6,7 @@ import br.infnet.musicfun.domain.payment.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.time.LocalDate;  // Added import for LocalDate
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,4 +63,3 @@ public class TransactionController {
         return transaction;
     }
 }
-
