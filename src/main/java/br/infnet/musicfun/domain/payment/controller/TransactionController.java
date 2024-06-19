@@ -1,42 +1,42 @@
 package br.infnet.musicfun.domain.payment.controller;
 
 import br.infnet.musicfun.domain.payment.dto.TransactionDTO;
+import br.infnet.musicfun.domain.payment.model.Transaction;
 import br.infnet.musicfun.domain.payment.service.TransactionService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/transactions")
-@RequiredArgsConstructor
 public class TransactionController {
 
+    @Autowired
     private final TransactionService transactionService;
 
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
     @GetMapping
-    public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
-        List<TransactionDTO> transactions = transactionService.findAll();
-        return ResponseEntity.ok(transactions);
+    public List<TransactionDTO> getAllTransactions() {
+        return transactionService.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
-        TransactionDTO transaction = transactionService.findById(id);
-        return ResponseEntity.ok(transaction);
+        return transactionService.findById(id).map(transaction -> ResponseEntity.ok(convertToDTO(transaction)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
-        TransactionDTO createdTransaction = transactionService.save(transactionDTO);
-        return ResponseEntity.ok(createdTransaction);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<TransactionDTO> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
-        TransactionDTO updatedTransaction = transactionService.update(id, transactionDTO);
-        return ResponseEntity.ok(updatedTransaction);
+        Transaction transaction = convertToEntity(transactionDTO);
+        Transaction savedTransaction = transactionService.save(transaction);
+        return ResponseEntity.ok(convertToDTO(savedTransaction));
     }
 
     @DeleteMapping("/{id}")
@@ -44,4 +44,23 @@ public class TransactionController {
         transactionService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private TransactionDTO convertToDTO(Transaction transaction) {
+        return TransactionDTO.builder()
+                .id(transaction.getId())
+                .amount(transaction.getAmount())
+                .merchant(transaction.getMerchant())
+                .date(transaction.getDate().toString())
+                .build();
+    }
+
+    private Transaction convertToEntity(TransactionDTO transactionDTO) {
+        Transaction transaction = new Transaction();
+        transaction.setAmount(transactionDTO.getAmount());
+        transaction.setMerchant(transactionDTO.getMerchant());
+        // Convert date from string to LocalDate or the appropriate type used in your model
+        transaction.setDate(LocalDate.parse(transactionDTO.getDate()));
+        return transaction;
+    }
 }
+
