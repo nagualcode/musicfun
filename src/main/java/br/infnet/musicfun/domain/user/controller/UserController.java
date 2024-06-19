@@ -3,7 +3,6 @@ package br.infnet.musicfun.domain.user.controller;
 import br.infnet.musicfun.domain.user.dto.UserDTO;
 import br.infnet.musicfun.domain.user.model.User;
 import br.infnet.musicfun.domain.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -28,7 +26,8 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        return userService.findById(id).map(user -> ResponseEntity.ok(convertToDTO(user)))
+        return userService.findById(id)
+                .map(this::convertToDTO)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -46,11 +45,11 @@ public class UserController {
     }
 
     private UserDTO convertToDTO(User user) {
-        return UserDTO.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .build();
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        return dto;
     }
 
     private User convertToEntity(UserDTO userDTO) {

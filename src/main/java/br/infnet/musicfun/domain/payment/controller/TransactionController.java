@@ -3,10 +3,9 @@ package br.infnet.musicfun.domain.payment.controller;
 import br.infnet.musicfun.domain.payment.dto.TransactionDTO;
 import br.infnet.musicfun.domain.payment.model.Transaction;
 import br.infnet.musicfun.domain.payment.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;  // Added import for LocalDate
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/transactions")
 public class TransactionController {
 
-    @Autowired
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
@@ -28,7 +26,8 @@ public class TransactionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
-        return transactionService.findById(id).map(transaction -> ResponseEntity.ok(convertToDTO(transaction)))
+        return transactionService.findById(id)
+                .map(this::convertToDTO)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -46,19 +45,18 @@ public class TransactionController {
     }
 
     private TransactionDTO convertToDTO(Transaction transaction) {
-        return TransactionDTO.builder()
-                .id(transaction.getId())
-                .amount(transaction.getAmount())
-                .merchant(transaction.getMerchant())
-                .date(transaction.getDate().toString())
-                .build();
+        TransactionDTO dto = new TransactionDTO();
+        dto.setId(transaction.getId());
+        dto.setAmount(transaction.getAmount());
+        dto.setMerchant(transaction.getMerchant());
+        dto.setDate(transaction.getDate().toString());
+        return dto;
     }
 
     private Transaction convertToEntity(TransactionDTO transactionDTO) {
         Transaction transaction = new Transaction();
         transaction.setAmount(transactionDTO.getAmount());
         transaction.setMerchant(transactionDTO.getMerchant());
-        // Convert date from string to LocalDate or the appropriate type used in your model
         transaction.setDate(LocalDate.parse(transactionDTO.getDate()));
         return transaction;
     }

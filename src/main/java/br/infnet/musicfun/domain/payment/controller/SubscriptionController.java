@@ -3,7 +3,6 @@ package br.infnet.musicfun.domain.payment.controller;
 import br.infnet.musicfun.domain.payment.dto.SubscriptionDTO;
 import br.infnet.musicfun.domain.payment.model.Subscription;
 import br.infnet.musicfun.domain.payment.service.SubscriptionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/subscriptions")
 public class SubscriptionController {
 
-    @Autowired
     private final SubscriptionService subscriptionService;
 
     public SubscriptionController(SubscriptionService subscriptionService) {
@@ -28,7 +26,8 @@ public class SubscriptionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SubscriptionDTO> getSubscriptionById(@PathVariable Long id) {
-        return subscriptionService.findById(id).map(subscription -> ResponseEntity.ok(convertToDTO(subscription)))
+        return subscriptionService.findById(id)
+                .map(this::convertToDTO)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -46,12 +45,12 @@ public class SubscriptionController {
     }
 
     private SubscriptionDTO convertToDTO(Subscription subscription) {
-        return SubscriptionDTO.builder()
-                .id(subscription.getId())
-                .planName(subscription.getPlanName())
-                .price(subscription.getPrice())
-                .duration(subscription.getDuration())
-                .build();
+        SubscriptionDTO dto = new SubscriptionDTO();
+        dto.setId(subscription.getId());
+        dto.setPlanName(subscription.getPlanName());
+        dto.setPrice(subscription.getPrice());
+        dto.setDuration(subscription.getDuration());
+        return dto;
     }
 
     private Subscription convertToEntity(SubscriptionDTO subscriptionDTO) {

@@ -1,16 +1,12 @@
 package br.infnet.musicfun.domain.core.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@Getter
-@Setter
 public abstract class BaseEntity implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +16,28 @@ public abstract class BaseEntity implements Serializable {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    // No setter for createdAt as it's managed by @PrePersist
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -32,4 +50,3 @@ public abstract class BaseEntity implements Serializable {
         updatedAt = LocalDateTime.now();
     }
 }
-

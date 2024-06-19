@@ -3,7 +3,6 @@ package br.infnet.musicfun.domain.user.controller;
 import br.infnet.musicfun.domain.user.dto.RoleDTO;
 import br.infnet.musicfun.domain.user.model.Role;
 import br.infnet.musicfun.domain.user.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/roles")
 public class RoleController {
 
-    @Autowired
     private final RoleService roleService;
 
     public RoleController(RoleService roleService) {
@@ -28,7 +26,8 @@ public class RoleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id) {
-        return roleService.findById(id).map(role -> ResponseEntity.ok(convertToDTO(role)))
+        return roleService.findById(id)
+                .map(this::convertToDTO)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -46,10 +45,10 @@ public class RoleController {
     }
 
     private RoleDTO convertToDTO(Role role) {
-        return RoleDTO.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .build();
+        RoleDTO dto = new RoleDTO();
+        dto.setId(role.getId());
+        dto.setName(role.getName());
+        return dto;
     }
 
     private Role convertToEntity(RoleDTO roleDTO) {
