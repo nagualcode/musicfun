@@ -1,20 +1,25 @@
 package br.infnet.musicfun.domain.payment.dto;
 
+import java.time.LocalDate;
+
 public class TransactionDTO {
     private Long id;
     private double amount;
     private String merchant;
-    private String date;
+    private String status;
+    private LocalDate transactionDate;
 
     public TransactionDTO() {}
 
-    public TransactionDTO(Long id, double amount, String merchant, String date) {
+    public TransactionDTO(Long id, double amount, String merchant, String status, LocalDate transactionDate) {
         this.id = id;
         this.amount = amount;
         this.merchant = merchant;
-        this.date = date;
+        this.status = status;
+        this.transactionDate = transactionDate;
     }
 
+    // Getters and setters for all fields
     public Long getId() {
         return id;
     }
@@ -39,11 +44,19 @@ public class TransactionDTO {
         this.merchant = merchant;
     }
 
-    public String getDate() {
-        return date;
+    public String getStatus() {
+        return status;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(LocalDate transactionDate) {
+        this.transactionDate = transactionDate;
     }
 }
