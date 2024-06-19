@@ -1,66 +1,47 @@
 package br.infnet.musicfun.domain.payment.controller;
 
 import br.infnet.musicfun.domain.payment.dto.TransactionDTO;
-import br.infnet.musicfun.domain.payment.model.Transaction;
 import br.infnet.musicfun.domain.payment.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/transactions")
+@RequiredArgsConstructor
 public class TransactionController {
 
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     @GetMapping
-    public List<TransactionDTO> getAllTransactions() {
-        return transactionService.findAll().stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
+    public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
+        List<TransactionDTO> transactions = transactionService.findAll();
+        return ResponseEntity.ok(transactions);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
-        return transactionService.findById(id)
-            .map(this::convertToDTO)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        TransactionDTO transaction = transactionService.findById(id);
+        return ResponseEntity.ok(transaction);
     }
 
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
-        Transaction transaction = convertToEntity(transactionDTO);
-        Transaction savedTransaction = transactionService.save(transaction);
-        return ResponseEntity.ok(convertToDTO(savedTransaction));
+        TransactionDTO createdTransaction = transactionService.save(transactionDTO);
+        return ResponseEntity.ok(createdTransaction);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TransactionDTO> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
+        TransactionDTO updatedTransaction = transactionService.update(id, transactionDTO);
+        return ResponseEntity.ok(updatedTransaction);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
-        transactionService.deleteById(id);
+        transactionService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private TransactionDTO convertToDTO(Transaction transaction) {
-        return TransactionDTO.builder()
-            .id(transaction.getId())
-            .amount(transaction.getAmount())
-            .transactionDate(transaction.getTransactionDate())
-            .status(transaction.getStatus())
-            .merchant(transaction.getMerchant())
-            .build();
-    }
-
-    private Transaction convertToEntity(TransactionDTO transactionDTO) {
-        return Transaction.builder()
-            .amount(transactionDTO.getAmount())
-            .transactionDate(transactionDTO.getTransactionDate())
-            .status(transactionDTO.getStatus())
-            .merchant(transactionDTO.getMerchant())
-            .build();
     }
 }

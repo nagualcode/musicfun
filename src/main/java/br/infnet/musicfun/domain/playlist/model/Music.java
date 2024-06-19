@@ -6,33 +6,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.Entity;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Music extends BaseEntity { // Extending BaseEntity
     private static final long serialVersionUID = 1L;
 
-    private Long id;
     private String title;
     private String artist;
     private int duration;
 
-    // Getter methods
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
+    // Using Jakarta Persistence annotations and Lombok's @Data for automatic getter/setter generation
 }
