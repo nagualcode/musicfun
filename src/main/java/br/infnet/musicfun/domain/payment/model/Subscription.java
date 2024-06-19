@@ -1,5 +1,6 @@
 package br.infnet.musicfun.domain.payment.model;
 
+import br.infnet.musicfun.domain.core.model.BaseEntity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Subscription implements Serializable {
+public class Subscription extends BaseEntity { // Extending BaseEntity
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -19,7 +20,8 @@ public class Subscription implements Serializable {
     private LocalDate endDate;
     private String status;
 
-    // Getter methods
+    // Overriding getId method to ensure consistency
+    @Override
     public Long getId() {
         return id;
     }

@@ -1,6 +1,6 @@
 package br.infnet.musicfun.domain.playlist.model;
 
-import java.io.Serializable;
+import br.infnet.musicfun.domain.core.model.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Music implements Serializable {
+public class Music extends BaseEntity { // Extending BaseEntity
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -19,6 +19,7 @@ public class Music implements Serializable {
     private int duration;
 
     // Getter methods
+    @Override
     public Long getId() {
         return id;
     }

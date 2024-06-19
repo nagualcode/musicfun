@@ -1,5 +1,6 @@
 package br.infnet.musicfun.domain.user.model;
 
+import br.infnet.musicfun.domain.core.model.BaseEntity;
 import java.io.Serializable;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements Serializable {
+public class User extends BaseEntity { // Extending BaseEntity
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -19,7 +20,8 @@ public class User implements Serializable {
     private String password;
     private Set<Role> roles;
 
-    // Getter methods
+    // Overriding getId method to ensure consistency
+    @Override
     public Long getId() {
         return id;
     }
