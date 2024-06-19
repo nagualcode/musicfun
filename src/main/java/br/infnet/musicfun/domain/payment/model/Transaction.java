@@ -6,6 +6,8 @@ import java.time.LocalDate;
 
 @Entity
 public class Transaction extends BaseEntity {
+    private static final long serialVersionUID = 1L;
+    
     private double amount;
     private String merchant;
     private String status;

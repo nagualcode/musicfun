@@ -6,6 +6,8 @@ import java.time.LocalDate;
 
 @Entity
 public class Subscription extends BaseEntity {
+    private static final long serialVersionUID = 1L;
+    
     private String type;
     private String planName;
     private double price;
