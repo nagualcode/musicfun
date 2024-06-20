@@ -2,27 +2,20 @@ package br.infnet.musicfun.domain.payment.model;
 
 import br.infnet.musicfun.domain.core.model.BaseEntity;
 import jakarta.persistence.Entity;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-public class Transaction extends BaseEntity {
+public class Transaction extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     private double amount;
+    private Long subscriptionId;
     private String merchant;
     private String status;
     private LocalDate transactionDate;
 
-    public Transaction() {
-    }
-
-    public Transaction(Long id, double amount, String merchant, String status, LocalDate transactionDate) {
-        this.setId(id);
-        this.amount = amount;
-        this.merchant = merchant;
-        this.status = status;
-        this.transactionDate = transactionDate;
-    }
+    // Getters and setters
 
     public double getAmount() {
         return amount;
@@ -30,6 +23,14 @@ public class Transaction extends BaseEntity {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public Long getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public void setSubscriptionId(Long subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 
     public String getMerchant() {

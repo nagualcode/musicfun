@@ -5,21 +5,23 @@ import java.time.LocalDate;
 public class TransactionDTO {
     private Long id;
     private double amount;
+    private Long subscriptionId;
     private String merchant;
     private String status;
     private LocalDate transactionDate;
 
-    public TransactionDTO() {}
-
-    public TransactionDTO(Long id, double amount, String merchant, String status, LocalDate transactionDate) {
+    // Full constructor
+    public TransactionDTO(Long id, double amount, Long subscriptionId, String merchant, String status, LocalDate transactionDate) {
         this.id = id;
         this.amount = amount;
+        this.subscriptionId = subscriptionId;
         this.merchant = merchant;
         this.status = status;
         this.transactionDate = transactionDate;
     }
 
-    // Getters and setters for all fields
+    // Getters and setters
+
     public Long getId() {
         return id;
     }
@@ -34,6 +36,14 @@ public class TransactionDTO {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public Long getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public void setSubscriptionId(Long subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 
     public String getMerchant() {
