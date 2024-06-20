@@ -34,44 +34,48 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public SubscriptionDTO createSubscription(@RequestBody SubscriptionDTO subscriptionDTO) {
+    public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO subscriptionDTO) {
         Subscription subscription = convertToEntity(subscriptionDTO);
         Subscription savedSubscription = subscriptionService.save(subscription);
-        return convertToDTO(savedSubscription);
+        SubscriptionDTO responseDTO = convertToDTO(savedSubscription);
+        return ResponseEntity.status(201).body(responseDTO);
     }
 
     @PutMapping("/{id}")
-    public SubscriptionDTO updateSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO subscriptionDTO) {
+    public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO subscriptionDTO) {
         Subscription subscription = convertToEntity(subscriptionDTO);
         subscription.setId(id);
         Subscription updatedSubscription = subscriptionService.update(subscription);
-        return convertToDTO(updatedSubscription);
+        SubscriptionDTO responseDTO = convertToDTO(updatedSubscription);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSubscription(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSubscription(@PathVariable Long id) {
         subscriptionService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     private SubscriptionDTO convertToDTO(Subscription subscription) {
         return new SubscriptionDTO(
                 subscription.getId(),
-                subscription.getType(),
                 subscription.getPlanName(),
+                subscription.getDuration(),
                 subscription.getPrice(),
                 subscription.getStartDate(),
-                subscription.getEndDate()
+                subscription.getEndDate(),
+                subscription.getType()
         );
     }
 
     private Subscription convertToEntity(SubscriptionDTO subscriptionDTO) {
         Subscription subscription = new Subscription();
         subscription.setId(subscriptionDTO.getId());
-        subscription.setType(subscriptionDTO.getType());
         subscription.setPlanName(subscriptionDTO.getPlanName());
         subscription.setPrice(subscriptionDTO.getPrice());
         subscription.setStartDate(subscriptionDTO.getStartDate());
         subscription.setEndDate(subscriptionDTO.getEndDate());
+        subscription.setType(subscriptionDTO.getType());
         return subscription;
     }
 }
