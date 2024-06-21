@@ -1,10 +1,11 @@
 spring.application.name=musicfun
 
 # DataSource settings
-spring.datasource.url=jdbc:mysql://sql10.freesqldatabase.com:3306/sql10714001
-spring.datasource.username=sql10714001
-spring.datasource.password=5rUDmGwlxT
+spring.datasource.url=jdbc:mysql://sql10.freesqldatabase.com:3306/sqlxxxxxx
+spring.datasource.username=xxxxxxxx
+spring.datasource.password=xxxxxx
 
+#adjust to deal with limitations of freedb
 spring.datasource.hikari.maximum-pool-size=1
 
 
