@@ -6,6 +6,7 @@ import br.infnet.musicfun.domain.playlist.model.Music;
 import br.infnet.musicfun.domain.playlist.dto.MusicDTO;
 import br.infnet.musicfun.domain.playlist.service.PlaylistService;
 import br.infnet.musicfun.domain.user.model.AppUser;
+import br.infnet.musicfun.domain.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,11 +37,15 @@ public class PlaylistControllerTest {
     @MockBean
     private PlaylistService playlistService;
 
+    @MockBean
+    private UserService userService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
     private Playlist playlist;
     private PlaylistDTO playlistDTO;
+    private AppUser user;
 
     @BeforeEach
     public void setup() {
@@ -52,7 +57,7 @@ public class PlaylistControllerTest {
                 new MusicDTO(music2.getId(), music2.getTitle(), music2.getArtist(), music2.getDuration(), music2.getAlbum(), music2.getGenre())
         );
 
-        AppUser user = new AppUser();
+        user = new AppUser();
         user.setId(1L);
         user.setUsername("testuser");
         user.setEmail("testuser@example.com");
@@ -103,7 +108,8 @@ public class PlaylistControllerTest {
     @Test
     @WithMockUser
     public void testCreatePlaylist() throws Exception {
-        Mockito.when(playlistService.save(Mockito.any(Playlist.class))).thenReturn(playlist);
+        Mockito.when(userService.findByUsername(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(playlistService.saveOrUpdate(Mockito.any(Playlist.class))).thenReturn(playlist);
 
         mockMvc.perform(post("/playlists")
                         .with(csrf())
@@ -119,7 +125,9 @@ public class PlaylistControllerTest {
     @Test
     @WithMockUser
     public void testUpdatePlaylist() throws Exception {
-        Mockito.when(playlistService.update(Mockito.any(Playlist.class))).thenReturn(playlist);
+        Mockito.when(userService.findByUsername(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(playlistService.findById(1L)).thenReturn(Optional.of(playlist)); // Ensure the playlist is found
+        Mockito.when(playlistService.saveOrUpdate(Mockito.any(Playlist.class))).thenReturn(playlist);
 
         mockMvc.perform(put("/playlists/1")
                         .with(csrf())

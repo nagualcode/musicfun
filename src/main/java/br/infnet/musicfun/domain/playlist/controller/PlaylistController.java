@@ -6,7 +6,9 @@ import br.infnet.musicfun.domain.playlist.model.Music;
 import br.infnet.musicfun.domain.playlist.model.Playlist;
 import br.infnet.musicfun.domain.playlist.service.PlaylistService;
 import br.infnet.musicfun.domain.user.dto.UserDTO;
-
+import br.infnet.musicfun.domain.user.model.AppUser;
+import br.infnet.musicfun.domain.user.service.UserService;
+import br.infnet.musicfun.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,9 @@ public class PlaylistController {
     @Autowired
     private PlaylistService playlistService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping
     public List<PlaylistDTO> getAllPlaylists() {
         return playlistService.findAll().stream()
@@ -33,7 +38,7 @@ public class PlaylistController {
     public PlaylistDTO getPlaylistById(@PathVariable Long id) {
         return playlistService.findById(id)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Playlist not found with id " + id));
     }
 
     @GetMapping("/user")
@@ -45,10 +50,24 @@ public class PlaylistController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/user/{username}")
+    public List<PlaylistDTO> getPlaylistsByUsername(@PathVariable String username) {
+        return playlistService.findByUserUsername(username).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/search")
+    public List<PlaylistDTO> getPlaylistsByName(@RequestParam String name) {
+        return playlistService.findByName(name).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     @PostMapping
-    public PlaylistDTO createPlaylist(@RequestBody PlaylistDTO playlistDTO) {
+    public PlaylistDTO createOrUpdatePlaylist(@RequestBody PlaylistDTO playlistDTO) {
         Playlist playlist = convertToEntity(playlistDTO);
-        Playlist savedPlaylist = playlistService.save(playlist);
+        Playlist savedPlaylist = playlistService.saveOrUpdate(playlist);
         return convertToDTO(savedPlaylist);
     }
 
@@ -56,13 +75,40 @@ public class PlaylistController {
     public PlaylistDTO updatePlaylist(@PathVariable Long id, @RequestBody PlaylistDTO playlistDTO) {
         Playlist playlist = convertToEntity(playlistDTO);
         playlist.setId(id);
-        Playlist updatedPlaylist = playlistService.update(playlist);
+        Playlist updatedPlaylist = playlistService.saveOrUpdate(playlist);
         return convertToDTO(updatedPlaylist);
     }
 
     @DeleteMapping("/{id}")
     public void deletePlaylist(@PathVariable Long id) {
         playlistService.delete(id);
+    }
+
+    @PostMapping("/user/favorites")
+    public PlaylistDTO addMusicToUserFavorites(@RequestBody List<MusicDTO> musicDTOs) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        
+        AppUser user = userService.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username " + username));
+
+        Playlist userFavorites = playlistService.findByUserUsername(username).stream()
+                .filter(playlist -> "UserFavorites".equals(playlist.getName()))
+                .findFirst()
+                .orElse(new Playlist(null, "UserFavorites", null, user));
+
+        List<Music> musics = musicDTOs.stream()
+                .map(musicDTO -> new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration(), musicDTO.getAlbum(), musicDTO.getGenre()))
+                .collect(Collectors.toList());
+
+        if (userFavorites.getMusics() != null) {
+            userFavorites.getMusics().addAll(musics);
+        } else {
+            userFavorites.setMusics(musics);
+        }
+
+        Playlist updatedPlaylist = playlistService.saveOrUpdate(userFavorites);
+        return convertToDTO(updatedPlaylist);
     }
 
     private PlaylistDTO convertToDTO(Playlist playlist) {
@@ -82,6 +128,12 @@ public class PlaylistController {
         playlist.setMusics(playlistDTO.getMusics().stream()
                 .map(musicDTO -> new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration(), musicDTO.getAlbum(), musicDTO.getGenre()))
                 .collect(Collectors.toList()));
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AppUser user = userService.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        playlist.setUser(user);
+
         return playlist;
     }
 }
