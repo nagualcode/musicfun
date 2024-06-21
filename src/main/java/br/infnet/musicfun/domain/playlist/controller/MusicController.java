@@ -51,10 +51,10 @@ public class MusicController {
     }
 
     private MusicDTO convertToDTO(Music music) {
-        return new MusicDTO(music.getId(), music.getTitle(), music.getArtist(), music.getDuration());
+        return new MusicDTO(music.getId(), music.getTitle(), music.getArtist(), music.getDuration(), music.getAlbum(), music.getGenre());
     }
 
     private Music convertToEntity(MusicDTO musicDTO) {
-        return new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration());
+        return new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration(), musicDTO.getAlbum(), musicDTO.getGenre());
     }
 }

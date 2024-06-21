@@ -1,6 +1,7 @@
 package br.infnet.musicfun.domain.user.service;
 
 import br.infnet.musicfun.domain.user.model.AppUser;
+import br.infnet.musicfun.domain.user.model.AppUserDetails;
 import br.infnet.musicfun.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,7 +40,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
+        AppUser appUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new AppUserDetails(appUser);
     }
 }

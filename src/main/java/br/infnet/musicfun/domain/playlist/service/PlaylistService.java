@@ -22,6 +22,10 @@ public class PlaylistService {
         return playlistRepository.findById(id);
     }
 
+    public List<Playlist> findByUserUsername(String username) {
+        return playlistRepository.findByUserUsername(username);
+    }
+
     public Playlist save(Playlist playlist) {
         return playlistRepository.save(playlist);
     }

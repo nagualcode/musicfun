@@ -2,23 +2,21 @@ package br.infnet.musicfun.domain.user.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-public class AppUser implements UserDetails, Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
-    private String email;
     private String password;
+    private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -27,16 +25,7 @@ public class AppUser implements UserDetails, Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    public AppUser() {
-    }
-
-    public AppUser(Long id, String username, String email, String password, Set<Role> roles) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-    }
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -54,12 +43,9 @@ public class AppUser implements UserDetails, Serializable {
         this.email = email;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     public void setUsername(String username) {
@@ -67,20 +53,19 @@ public class AppUser implements UserDetails, Serializable {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> (GrantedAuthority) role::getName)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
-    public String getUsername() {
-        return username;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> (GrantedAuthority) role::getName)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -103,14 +88,13 @@ public class AppUser implements UserDetails, Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "AppUser{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", roles=" + roles +
-                '}';
+    public Set<Role> getRoles() {
+        return roles;
     }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    private static final long serialVersionUID = 1L;
 }

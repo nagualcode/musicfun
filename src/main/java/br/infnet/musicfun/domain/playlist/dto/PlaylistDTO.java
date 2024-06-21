@@ -1,11 +1,13 @@
 package br.infnet.musicfun.domain.playlist.dto;
 
+import br.infnet.musicfun.domain.user.dto.UserDTO;
 import java.util.List;
 
 public class PlaylistDTO {
     private Long id;
     private String name;
     private List<MusicDTO> musics;
+    private UserDTO user;
 
     public PlaylistDTO() {
     }
@@ -15,6 +17,15 @@ public class PlaylistDTO {
         this.name = name;
         this.musics = musics;
     }
+
+    public PlaylistDTO(Long id, String name, List<MusicDTO> musics, UserDTO user) {
+        this.id = id;
+        this.name = name;
+        this.musics = musics;
+        this.user = user;
+    }
+
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -40,12 +51,11 @@ public class PlaylistDTO {
         this.musics = musics;
     }
 
-    @Override
-    public String toString() {
-        return "PlaylistDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", musics=" + musics +
-                '}';
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }
