@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -149,5 +150,28 @@ public class PlaylistControllerTest {
                         .with(csrf())
                         .with(user("admin").password("password").roles("USER", "ADMIN")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    public void testAddMusicToUserFavorites() throws Exception {
+        MusicDTO musicDTO = new MusicDTO(3L, "Song 3", "Artist 3", 320, "Album 3", "Genre 3");
+        List<MusicDTO> musicDTOs = Arrays.asList(musicDTO);
+
+        Playlist userFavorites = new Playlist(null, "UserFavorites", new ArrayList<>(), user);
+        userFavorites.getMusics().add(new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration(), musicDTO.getAlbum(), musicDTO.getGenre()));
+
+        Mockito.when(userService.findByUsername(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(playlistService.findByUserUsername(Mockito.anyString())).thenReturn(Arrays.asList(userFavorites));
+        Mockito.when(playlistService.saveOrUpdate(Mockito.any(Playlist.class))).thenReturn(userFavorites);
+
+        mockMvc.perform(post("/playlists/user/favorites")
+                        .with(csrf())
+                        .with(user("testuser").password("password").roles("USER"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(musicDTOs)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("UserFavorites"))
+                .andExpect(jsonPath("$.musics[0].title").value("Song 3"));
     }
 }

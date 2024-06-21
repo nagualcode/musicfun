@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,24 +89,20 @@ public class PlaylistController {
     public PlaylistDTO addMusicToUserFavorites(@RequestBody List<MusicDTO> musicDTOs) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-        
+
         AppUser user = userService.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username " + username));
 
         Playlist userFavorites = playlistService.findByUserUsername(username).stream()
                 .filter(playlist -> "UserFavorites".equals(playlist.getName()))
                 .findFirst()
-                .orElse(new Playlist(null, "UserFavorites", null, user));
+                .orElse(new Playlist(null, "UserFavorites", new ArrayList<>(), user));
 
         List<Music> musics = musicDTOs.stream()
                 .map(musicDTO -> new Music(musicDTO.getId(), musicDTO.getTitle(), musicDTO.getArtist(), musicDTO.getDuration(), musicDTO.getAlbum(), musicDTO.getGenre()))
                 .collect(Collectors.toList());
 
-        if (userFavorites.getMusics() != null) {
-            userFavorites.getMusics().addAll(musics);
-        } else {
-            userFavorites.setMusics(musics);
-        }
+        userFavorites.getMusics().addAll(musics);
 
         Playlist updatedPlaylist = playlistService.saveOrUpdate(userFavorites);
         return convertToDTO(updatedPlaylist);
