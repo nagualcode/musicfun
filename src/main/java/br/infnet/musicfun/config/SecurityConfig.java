@@ -20,6 +20,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/public/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll() // Atualizar as URLs do Swagger para a versão mais recente
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
