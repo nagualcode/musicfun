@@ -7,6 +7,7 @@ import br.infnet.musicfun.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,9 @@ public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private AntiFraudService antiFraudService;
 
     public List<TransactionDTO> findAll() {
         return transactionRepository.findAll().stream()
@@ -30,6 +34,13 @@ public class TransactionService {
 
     public TransactionDTO save(TransactionDTO transactionDTO) {
         Transaction transaction = convertToEntity(transactionDTO);
+        transaction.setTimestamp(LocalDateTime.now()); // Definir timestamp atual
+
+        // Validar transação com AntiFraudService
+        if (!antiFraudService.validateTransaction(transaction)) {
+            throw new IllegalArgumentException("Transação suspeita de fraude.");
+        }
+
         Transaction savedTransaction = transactionRepository.save(transaction);
         return convertToDTO(savedTransaction);
     }
@@ -40,6 +51,13 @@ public class TransactionService {
         }
         Transaction transaction = convertToEntity(transactionDTO);
         transaction.setId(id);
+        transaction.setTimestamp(LocalDateTime.now()); // Atualizar timestamp
+
+        // Validar transação com AntiFraudService
+        if (!antiFraudService.validateTransaction(transaction)) {
+            throw new IllegalArgumentException("Transação suspeita de fraude.");
+        }
+
         Transaction updatedTransaction = transactionRepository.save(transaction);
         return convertToDTO(updatedTransaction);
     }
@@ -58,7 +76,7 @@ public class TransactionService {
                 transaction.getSubscriptionId(),
                 transaction.getMerchant(),
                 transaction.getStatus(),
-                transaction.getTransactionDate()
+                transaction.getTimestamp()
         );
     }
 
@@ -69,7 +87,7 @@ public class TransactionService {
         transaction.setSubscriptionId(transactionDTO.getSubscriptionId());
         transaction.setMerchant(transactionDTO.getMerchant());
         transaction.setStatus(transactionDTO.getStatus());
-        transaction.setTransactionDate(transactionDTO.getTransactionDate());
+        transaction.setTimestamp(transactionDTO.getTimestamp());
         return transaction;
     }
 }

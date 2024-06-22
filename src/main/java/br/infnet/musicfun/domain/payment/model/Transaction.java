@@ -3,7 +3,7 @@ package br.infnet.musicfun.domain.payment.model;
 import br.infnet.musicfun.domain.core.model.BaseEntity;
 import jakarta.persistence.Entity;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Transaction extends BaseEntity implements Serializable {
@@ -13,7 +13,8 @@ public class Transaction extends BaseEntity implements Serializable {
     private Long subscriptionId;
     private String merchant;
     private String status;
-    private LocalDate transactionDate;
+    private LocalDateTime timestamp;
+    private Long userId;
 
     // Getters and setters
 
@@ -49,11 +50,19 @@ public class Transaction extends BaseEntity implements Serializable {
         this.status = status;
     }
 
-    public LocalDate getTransactionDate() {
-        return transactionDate;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

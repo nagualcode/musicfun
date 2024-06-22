@@ -15,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,11 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-// import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-// @ActiveProfiles("test")
-
 @AutoConfigureMockMvc
 public class TransactionControllerTest {
 
@@ -57,19 +54,19 @@ public class TransactionControllerTest {
         testTransaction.setSubscriptionId(1L);
         testTransaction.setMerchant("Merchant1");
         testTransaction.setStatus("Success");
-        testTransaction.setTransactionDate(LocalDate.now());
+        testTransaction.setTimestamp(LocalDateTime.now());
 
         Transaction savedTransaction = transactionRepository.save(testTransaction);
         testTransactionId = savedTransaction.getId();
 
-        transactionDTO = new TransactionDTO(savedTransaction.getId(), savedTransaction.getAmount(), 
-            savedTransaction.getSubscriptionId(), savedTransaction.getMerchant(), 
-            savedTransaction.getStatus(), savedTransaction.getTransactionDate());
+        transactionDTO = new TransactionDTO(savedTransaction.getId(), savedTransaction.getAmount(),
+                savedTransaction.getSubscriptionId(), savedTransaction.getMerchant(),
+                savedTransaction.getStatus(), savedTransaction.getTimestamp());
     }
 
     @Test
     public void createTransactionTest() throws Exception {
-        TransactionDTO newTransactionDTO = new TransactionDTO(null, 20.00, 2L, "Merchant2", "Pending", LocalDate.now());
+        TransactionDTO newTransactionDTO = new TransactionDTO(null, 20.00, 2L, "Merchant2", "Pending", LocalDateTime.now());
 
         when(transactionService.save(any(TransactionDTO.class))).thenReturn(newTransactionDTO);
 
@@ -97,7 +94,7 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.subscriptionId").value(1L))
                 .andExpect(jsonPath("$.merchant").value("Merchant1"))
                 .andExpect(jsonPath("$.status").value("Success"))
-                .andExpect(jsonPath("$.transactionDate").exists());
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
     @Test
@@ -114,7 +111,7 @@ public class TransactionControllerTest {
 
     @Test
     public void updateTransactionTest() throws Exception {
-        TransactionDTO updatedTransactionDTO = new TransactionDTO(testTransactionId, 25.00, 2L, "Merchant2", "Completed", LocalDate.now());
+        TransactionDTO updatedTransactionDTO = new TransactionDTO(testTransactionId, 25.00, 2L, "Merchant2", "Completed", LocalDateTime.now());
 
         when(transactionService.update(any(Long.class), any(TransactionDTO.class))).thenReturn(updatedTransactionDTO);
 
