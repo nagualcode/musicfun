@@ -64,3 +64,18 @@ MusicFun é um aplicativo que permite aos usuários criar e gerenciar playlists,
 - **POST `/playlists/user/favorites`**: Adiciona músicas à playlist de favoritos do usuário autenticado. Recebe uma lista de `MusicDTO` e retorna o `PlaylistDTO` atualizado.
 
 
+## Diagramas e Apresentação
+
+### Diagrama de Classes
+![Diagrama de Classes](./docs/classes.png)
+
+### Diagrama de Sequência
+![Diagrama de Sequência](./docs/sequence.png)
+
+### Apresentação PDF
+[Download da Apresentação](./docs/presentation.pdf)
+
+
+
+
+
